@@ -1,8 +1,8 @@
 /*
  * This file is a part of BSL Language Server.
  *
- * Copyright (c) 2018-2021
- * Alexey Sosnoviy <labotamy@gmail.com>, Nikita Gryzlov <nixel2007@gmail.com> and contributors
+ * Copyright (c) 2018-2022
+ * Alexey Sosnoviy <labotamy@gmail.com>, Nikita Fedkin <nixel2007@gmail.com> and contributors
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later
  *
@@ -21,9 +21,11 @@
  */
 package com.github._1c_syntax.bsl.languageserver.references.model;
 
+import com.github._1c_syntax.bsl.languageserver.utils.Ranges;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Обращение к символу в файле.
@@ -31,7 +33,7 @@ import lombok.Value;
 @Value
 @AllArgsConstructor
 @Builder
-public class SymbolOccurrence {
+public class SymbolOccurrence implements Comparable<SymbolOccurrence> {
 
   /**
    * Тип обращения к символу.
@@ -47,4 +49,24 @@ public class SymbolOccurrence {
    * Месторасположение обращения к символу.
    */
   Location location;
+
+  @Override
+  public int compareTo(@NotNull SymbolOccurrence o) {
+    if (this.equals(o)) {
+      return 0;
+    }
+    final var uriCompare = location.getUri().compareTo(o.location.getUri());
+    if (uriCompare != 0){
+      return uriCompare;
+    }
+    final var rangesCompare = Ranges.compare(location.getRange(), o.location.getRange());
+    if (rangesCompare != 0){
+      return rangesCompare;
+    }
+    final var occurenceCompare = occurrenceType.compareTo(o.occurrenceType);
+    if (occurenceCompare != 0){
+      return occurenceCompare;
+    }
+    return symbol.compareTo(o.symbol);
+  }
 }

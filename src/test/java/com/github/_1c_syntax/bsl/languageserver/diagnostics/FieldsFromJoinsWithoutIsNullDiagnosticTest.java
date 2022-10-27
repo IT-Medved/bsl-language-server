@@ -1,8 +1,8 @@
 /*
  * This file is a part of BSL Language Server.
  *
- * Copyright (c) 2018-2021
- * Alexey Sosnoviy <labotamy@gmail.com>, Nikita Gryzlov <nixel2007@gmail.com> and contributors
+ * Copyright (c) 2018-2022
+ * Alexey Sosnoviy <labotamy@gmail.com>, Nikita Fedkin <nixel2007@gmail.com> and contributors
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later
  *
@@ -21,12 +21,12 @@
  */
 package com.github._1c_syntax.bsl.languageserver.diagnostics;
 
-import com.github._1c_syntax.bsl.languageserver.util.TestUtils;
 import com.github._1c_syntax.bsl.languageserver.utils.Ranges;
 import org.assertj.core.api.Assertions;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticRelatedInformation;
 import org.eclipse.lsp4j.Range;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -41,6 +41,7 @@ class FieldsFromJoinsWithoutIsNullDiagnosticTest extends AbstractDiagnosticTest<
   }
 
   @Test
+  @Disabled
   void test() {
 
     List<Diagnostic> diagnostics = getDiagnostics();
@@ -100,11 +101,9 @@ class FieldsFromJoinsWithoutIsNullDiagnosticTest extends AbstractDiagnosticTest<
 
     checkContent(
       diagnostics.get(8),
-      Ranges.create(194, 5, 195, 50),
-      Arrays.asList(
-        Ranges.create(192, 13, 32),
-        Ranges.create(196, 9, 30)
-      ));
+      Ranges.create(177, 5, 178, 50),
+      Ranges.create(175, 13, 32)
+    );
 
   }
 
@@ -130,105 +129,5 @@ class FieldsFromJoinsWithoutIsNullDiagnosticTest extends AbstractDiagnosticTest<
       var relatedLocationRange = relatedLocationRanges.get(i);
       Assertions.assertThat(relatedInformation.getLocation().getRange()).isEqualTo(relatedLocationRange);
     }
-  }
-
-  @Test
-  void testWithIsNotNullInsideExpression() {
-    var sample =
-      "    Запрос = Новый Запрос;\n" +
-        "    Запрос.Текст =\n" +
-        "    \"ВЫБРАТЬ Сотрудники4.Ссылка // не ошибка\n" +
-        "    |ИЗ Справочник.Склады КАК Склады\n" +
-        "    |ЛЕВОЕ СОЕДИНЕНИЕ Справочник.Сотрудники КАК Сотрудники4\n" +
-        "    |ПО Склады.Кладовщик = Сотрудники4.Ссылка\n" +
-        "    |ГДЕ Сотрудники4.Флаг ЕСТЬ НЕ NULL   //не ошибка\n" +
-        "    |\";\n";
-
-    var documentContext = TestUtils.getDocumentContext(sample);
-    var diagnostics = getDiagnostics(documentContext);
-
-    assertThat(diagnostics).isEmpty();
-  }
-
-  @Test
-  void testWithNotIsNullInsideExpression() {
-    var sample =
-      "    Запрос = Новый Запрос;\n" +
-        "    Запрос.Текст =\n" +
-        "    \"ВЫБРАТЬ Сотрудники4.Ссылка // не ошибка\n" +
-        "    |ИЗ Справочник.Склады КАК Склады\n" +
-        "    |ЛЕВОЕ СОЕДИНЕНИЕ Справочник.Сотрудники КАК Сотрудники4\n" +
-        "    |ПО Склады.Кладовщик = Сотрудники4.Ссылка\n" +
-        "    |ГДЕ НЕ Сотрудники4.Флаг ЕСТЬ NULL   //не ошибка\n" +
-        "    |\";\n";
-
-    var documentContext = TestUtils.getDocumentContext(sample);
-    var diagnostics = getDiagnostics(documentContext);
-
-    assertThat(diagnostics).isEmpty();
-  }
-
-  @Test
-  void testWithNotIsNullInPairsInsideExpression() {
-    var sample =
-      "    Запрос = Новый Запрос;\n" +
-        "    Запрос.Текст =\n" +
-        "    \"ВЫБРАТЬ Сотрудники.Ссылка // не ошибка\n" +
-        "    |ИЗ Справочник.Склады КАК Склады\n" +
-        "    |ЛЕВОЕ СОЕДИНЕНИЕ Справочник.Сотрудники КАК Сотрудники\n" +
-        "    |ПО Склады.Кладовщик = Сотрудники.Ссылка\n" +
-        "    |ГДЕ (НЕ (Сотрудники.Флаг ЕСТЬ NULL))   //не ошибка\n" +
-        "    |\"; ";
-
-    var documentContext = TestUtils.getDocumentContext(sample);
-    var diagnostics = getDiagnostics(documentContext);
-
-    assertThat(diagnostics).isEmpty();
-  }
-
-  @Test
-  void testWithIsNullInsideExpression() {
-    var sample =
-      "    Запрос = Новый Запрос;\n" +
-        "    Запрос.Текст =\n" +
-        "    \"ВЫБРАТЬ Сотрудники4.Ссылка // ошибка\n" +
-        "    |ИЗ Справочник.Склады КАК Склады\n" +
-        "    |ЛЕВОЕ СОЕДИНЕНИЕ Справочник.Сотрудники КАК Сотрудники4\n" +
-        "    |ПО Склады.Кладовщик = Сотрудники4.Ссылка\n" +
-        "    |ГДЕ Сотрудники4.Флаг ЕСТЬ NULL   //не ошибка\n" +
-        "    |\";\n";
-
-    var documentContext = TestUtils.getDocumentContext(sample);
-    var diagnostics = getDiagnostics(documentContext);
-
-    assertThat(diagnostics).hasSize(1);
-  }
-
-  @Test
-  void tesEqualTableNamesInUnion() {
-    var sample =
-      "    Запрос = Новый Запрос;\n" +
-        "    Запрос.Текст =\n" +
-        "    \"ВЫБРАТЬ\n" +
-        "    |\tКонтрагенты11.Ссылка КАК Ссылка  //не ошибка \n" +
-        "    |ПОМЕСТИТЬ ВТ\n" +
-        "    |ИЗ\n" +
-        "    |\tТаблица КАК Контрагенты11\n" +
-        "    |\n" +
-        "    |ОБЪЕДИНИТЬ ВСЕ\n" +
-        "    |\n" +
-        "    |ВЫБРАТЬ\n" +
-        "    |   Таблица11.Ссылка КАК Ссылка,\n" +
-        "    |   Контрагенты11.Ссылка КАК Ссылка1    //<-- ошибка \n" +
-        "    |ИЗ\n" +
-        "    |\tСправочник.Склады КАК Таблица11\n" +
-        "    |   ЛЕВОЕ СОЕДИНЕНИЕ Справочник.Контрагенты КАК Контрагенты11\n" +
-        "    |   ПО Таблица11.Ссылка = Контрагенты11.Ссылка\n" +
-        "    |\";\n";
-
-    var documentContext = TestUtils.getDocumentContext(sample);
-    var diagnostics = getDiagnostics(documentContext);
-
-    assertThat(diagnostics).hasSize(1);
   }
 }

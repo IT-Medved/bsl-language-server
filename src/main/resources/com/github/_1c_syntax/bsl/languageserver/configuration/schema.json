@@ -404,6 +404,9 @@
                 "UnusedLocalMethod": {
                     "$ref": "parameters-schema.json#/definitions/UnusedLocalMethod"
                 },
+                "UnusedLocalVariable": {
+                    "$ref": "parameters-schema.json#/definitions/UnusedLocalVariable"
+                },
                 "UnusedParameters": {
                     "$ref": "parameters-schema.json#/definitions/UnusedParameters"
                 },
@@ -646,6 +649,64 @@
                             "description": "Ignore ordinary application warnings."
                         }
                     ]
+                },
+                "subsystemsFilter": {
+                    "$id": "#/properties/subsystemsFilter",
+                    "type": "object",
+                    "title": "Subsystems filter configuration.",
+                    "properties": {
+                        "include": {
+                            "$id": "#/properties/include",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "exclude": {
+                            "$id": "#/properties/exclude",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "formatting": {
+            "$id": "#/properties/formatting",
+            "type": "object",
+            "title": "Formatting configuration.",
+            "properties": {
+                "useUpperCaseForOrNotKeywords": {
+                    "$id": "#/properties/useUpperCaseForOrNotAndKeywords",
+                    "type": "boolean",
+                    "default": true,
+                    "oneOf": [
+                        {
+                            "const": true,
+                            "description": "Configuration use uppercase 'OR', 'NOT', 'AND' keywords."
+                        },
+                        {
+                            "const": false,
+                            "description": "Configuration use CamelCase 'Or', 'Not', 'And' keywords."
+                        }
+                    ]
+                },
+                "useKeywordsFormatting": {
+                    "$id": "#/properties/useKeywordsFormatting",
+                    "type": "boolean",
+                    "default": true,
+                    "oneOf": [
+                        {
+                            "const": true,
+                            "description": "Format keywords to canonical view"
+                        },
+                        {
+                            "const": false,
+                            "description": "Don't format keywords to canonical view"
+                        }
+                    ]
                 }
             }
         },
@@ -675,6 +736,26 @@
             "type": "string",
             "title": "Path to root directory of configuration files.",
             "default": null
+        },
+        "sendErrors": {
+            "$id": "#/properties/sendErrors",
+            "type": "string",
+            "oneOf": [
+                {
+                    "const": "send",
+                    "description": "Send always"
+                },
+                {
+                    "const": "never",
+                    "description": "Never send"
+                },
+                {
+                    "const": "ask",
+                    "description": "Ask for permission"
+                }
+            ],
+            "title": "Send errors and exceptions to developers of BSL Language Server.",
+            "default": "ask"
         }
     }
 }

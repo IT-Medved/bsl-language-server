@@ -1,8 +1,8 @@
 /*
  * This file is a part of BSL Language Server.
  *
- * Copyright (c) 2018-2021
- * Alexey Sosnoviy <labotamy@gmail.com>, Nikita Gryzlov <nixel2007@gmail.com> and contributors
+ * Copyright (c) 2018-2022
+ * Alexey Sosnoviy <labotamy@gmail.com>, Nikita Fedkin <nixel2007@gmail.com> and contributors
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later
  *
@@ -25,10 +25,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.github._1c_syntax.bsl.languageserver.configuration.codelens.CodeLensOptions;
 import com.github._1c_syntax.bsl.languageserver.configuration.diagnostics.DiagnosticsOptions;
 import com.github._1c_syntax.bsl.languageserver.configuration.documentlink.DocumentLinkOptions;
+import com.github._1c_syntax.bsl.languageserver.configuration.formating.FormattingOptions;
 import com.github._1c_syntax.utils.Absolute;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -89,8 +90,14 @@ public class LanguageServerConfiguration {
   @Setter(value = AccessLevel.NONE)
   private DocumentLinkOptions documentLinkOptions = new DocumentLinkOptions();
 
+  @JsonProperty("formatting")
+  @Setter(value = AccessLevel.NONE)
+  private FormattingOptions formattingOptions = new FormattingOptions();
+
   private String siteRoot = "https://1c-syntax.github.io/bsl-language-server";
   private boolean useDevSite;
+
+  private SendErrorsMode sendErrors = SendErrorsMode.DEFAULT;
 
   @Nullable
   private File traceLog;
@@ -102,11 +109,11 @@ public class LanguageServerConfiguration {
   @Setter(value = AccessLevel.NONE)
   private File configurationFile;
 
-  @Value("${app.configuration.path}")
+  @Value("${app.configuration.path:.bsl-language-server.json}")
   @JsonIgnore
   private String configurationFilePath;
 
-  @Value(("${app.globalConfiguration.path}"))
+  @Value(("${app.globalConfiguration.path:${user.home}/.bsl-language-server.json}"))
   @JsonIgnore
   private String globalConfigPath;
 
@@ -190,8 +197,9 @@ public class LanguageServerConfiguration {
 
     LanguageServerConfiguration configuration;
 
-    var mapper = new ObjectMapper();
-    mapper.enable(ACCEPT_CASE_INSENSITIVE_ENUMS);
+    var mapper = JsonMapper.builder()
+      .enable(ACCEPT_CASE_INSENSITIVE_ENUMS)
+      .build();
 
     try {
       configuration = mapper.readValue(configurationFile, LanguageServerConfiguration.class);
@@ -212,6 +220,7 @@ public class LanguageServerConfiguration {
     PropertyUtils.copyProperties(this.codeLensOptions, configuration.codeLensOptions);
     PropertyUtils.copyProperties(this.diagnosticsOptions, configuration.diagnosticsOptions);
     PropertyUtils.copyProperties(this.documentLinkOptions, configuration.documentLinkOptions);
+    PropertyUtils.copyProperties(this.formattingOptions, configuration.formattingOptions);
   }
 
 }

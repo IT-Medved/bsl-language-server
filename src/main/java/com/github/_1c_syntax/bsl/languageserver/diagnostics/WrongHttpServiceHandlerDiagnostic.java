@@ -1,8 +1,8 @@
 /*
  * This file is a part of BSL Language Server.
  *
- * Copyright (c) 2018-2021
- * Alexey Sosnoviy <labotamy@gmail.com>, Nikita Gryzlov <nixel2007@gmail.com> and contributors
+ * Copyright (c) 2018-2022
+ * Alexey Sosnoviy <labotamy@gmail.com>, Nikita Fedkin <nixel2007@gmail.com> and contributors
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later
  *
@@ -28,9 +28,9 @@ import com.github._1c_syntax.bsl.languageserver.diagnostics.metadata.DiagnosticS
 import com.github._1c_syntax.bsl.languageserver.diagnostics.metadata.DiagnosticTag;
 import com.github._1c_syntax.bsl.languageserver.diagnostics.metadata.DiagnosticType;
 import com.github._1c_syntax.bsl.languageserver.utils.Ranges;
+import com.github._1c_syntax.bsl.types.ModuleType;
 import com.github._1c_syntax.mdclasses.mdo.MDHttpService;
 import com.github._1c_syntax.mdclasses.mdo.children.HTTPServiceMethod;
-import com.github._1c_syntax.mdclasses.mdo.support.ModuleType;
 import org.eclipse.lsp4j.Range;
 
 @DiagnosticMetadata(
@@ -56,19 +56,17 @@ public class WrongHttpServiceHandlerDiagnostic extends AbstractDiagnostic {
 
     //todo может ли не быть модуля http-сервиса? тогда непонятно, на какой модуль вешать замечания
 
-    Ranges.getFirstSignificantTokenRange(documentContext.getTokens())
-      .ifPresent(this::processModuleWithRange);
+    diagnosticRange = documentContext.getSymbolTree().getModule().getSelectionRange();
+    if (!Ranges.isEmpty(diagnosticRange)) {
+      processModule();
+    }
   }
 
-  private void processModuleWithRange(Range range) {
-    diagnosticRange = range;
-
+  private void processModule() {
     documentContext.getMdObject()
       .filter(MDHttpService.class::isInstance)
       .map(MDHttpService.class::cast)
       .ifPresent(this::checkService);
-
-    diagnosticRange = null;
   }
 
   private void checkService(MDHttpService mdHttpService) {

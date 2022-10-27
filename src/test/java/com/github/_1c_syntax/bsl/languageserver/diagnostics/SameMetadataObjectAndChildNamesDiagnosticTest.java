@@ -1,8 +1,8 @@
 /*
  * This file is a part of BSL Language Server.
  *
- * Copyright (c) 2018-2021
- * Alexey Sosnoviy <labotamy@gmail.com>, Nikita Gryzlov <nixel2007@gmail.com> and contributors
+ * Copyright (c) 2018-2022
+ * Alexey Sosnoviy <labotamy@gmail.com>, Nikita Fedkin <nixel2007@gmail.com> and contributors
  *
  * SPDX-License-Identifier: LGPL-3.0-or-later
  *
@@ -21,12 +21,12 @@
  */
 package com.github._1c_syntax.bsl.languageserver.diagnostics;
 
+import com.github._1c_syntax.bsl.types.ModuleType;
 import com.github._1c_syntax.mdclasses.mdo.AbstractMDObjectBase;
 import com.github._1c_syntax.mdclasses.mdo.AbstractMDObjectComplex;
 import com.github._1c_syntax.mdclasses.mdo.attributes.AbstractMDOAttribute;
 import com.github._1c_syntax.mdclasses.mdo.attributes.TabularSection;
 import com.github._1c_syntax.mdclasses.mdo.metadata.AttributeType;
-import com.github._1c_syntax.mdclasses.mdo.support.ModuleType;
 import com.github._1c_syntax.utils.Absolute;
 import org.eclipse.lsp4j.Diagnostic;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +48,7 @@ class SameMetadataObjectAndChildNamesDiagnosticTest extends AbstractDiagnosticTe
     super(SameMetadataObjectAndChildNamesDiagnostic.class);
   }
 
-  private static final String PATH_TO_METADATA = "src/test/resources/metadata";
+  private static final String PATH_TO_METADATA = "src/test/resources/metadata/designer";
 
   @BeforeEach
   void beforeTest() {
@@ -96,8 +96,8 @@ class SameMetadataObjectAndChildNamesDiagnosticTest extends AbstractDiagnosticTe
 
     assertThat(diagnostics).hasSize(2);
     assertThat(diagnostics, true)
-      .anyMatch(diagnostic -> diagnostic.getMessage().contains("Справочник1.Attribute"))
-      .anyMatch(diagnostic -> diagnostic.getMessage().contains("Справочник1.TabularSection"))
+      .anyMatch(diagnostic -> diagnostic.getMessage().contains("Справочник1.Реквизит"))
+      .anyMatch(diagnostic -> diagnostic.getMessage().contains("Справочник1.ТабличнаяЧасть"))
     ;
   }
 
@@ -138,9 +138,9 @@ class SameMetadataObjectAndChildNamesDiagnosticTest extends AbstractDiagnosticTe
     assertThat(diagnostics)
       .hasSize(5)
       .noneMatch(diagnostic -> diagnostic.getMessage().contains("имя `Справочник.Справочник1"))
-      .anyMatch(diagnostic -> diagnostic.getMessage().contains("имя `Документ.Документ1.Attribute"))
-      .anyMatch(diagnostic -> diagnostic.getMessage().contains("имя `Документ.Документ1.TabularSection"))
-      .anyMatch(diagnostic -> diagnostic.getMessage().contains("имя `РегистрСведений.РегистрСведений1.Dimension"))
+      .anyMatch(diagnostic -> diagnostic.getMessage().contains("имя `Документ.Документ1.Реквизит"))
+      .anyMatch(diagnostic -> diagnostic.getMessage().contains("имя `Документ.Документ1.ТабличнаяЧасть"))
+      .anyMatch(diagnostic -> diagnostic.getMessage().contains("имя `РегистрСведений.РегистрСведений1.Измерение"))
     ;
   }
 }
