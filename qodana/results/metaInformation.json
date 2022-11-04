@@ -1,18 +1,18 @@
 {
-  "total": 24,
+  "total": 25,
   "tools inspection": {
-    "Code Inspection": 24
+    "Code Inspection": 25
   },
   "attributes": {
     "vcs": {
       "sarifIdea": {
         "repositoryUri": "https://github.com/jmpjck/bsl-language-server",
-        "revisionId": "2e933d5a98dd245ee1b73d939a5a6c3be313e638",
+        "revisionId": "9cc70e51783f5f7499aca1f7c3454bd3c3cfb445",
         "branch": "develop"
       }
     },
     "deviceId": "200820300000000-f2c6-c742-839e-c0c28e68adda",
-    "jobUrl": "https://github.com/jmpjck/bsl-language-server/actions/runs/3371581264",
+    "jobUrl": "https://github.com/jmpjck/bsl-language-server/actions/runs/3392977401",
     "repoUrl": "https://github.com/jmpjck/bsl-language-server"
   }
 }
